@@ -1,4 +1,3 @@
--- lib/crackscript/functions.lua
 local functions = {}
 
 functions.create_directory = function(path)
@@ -54,124 +53,6 @@ functions.load_blacklist = function(blacklist_file_path)
     return blacklist
 end
 
-functions.generate_default_chatbot = function(chatbot_file_path)
-    local default_data = [[
-    {
-      "triggers": [
-        {
-          "keywords": ["hello", "hi", "hey"],
-          "responses": [
-            "What do you want, %s?",
-            "Yeah, what, %s?",
-            "Skip the greetings, let's go, %s."
-          ]
-        },
-        {
-          "keywords": ["mission", "job", "heist"],
-          "responses": [
-            "Can you even handle it, %s?",
-            "About time you proved useful, %s.",
-            "Think you can manage without messing up, %s?"
-          ]
-        },
-        {
-          "keywords": ["car", "vehicle", "ride"],
-          "responses": [
-            "Your junk car again, %s?",
-            "Learn to drive first, %s.",
-            "Nice, but I've got something better, %s."
-          ]
-        },
-        {
-          "keywords": ["weapon", "gun", "firearm"],
-          "responses": [
-            "Got anything decent, %s?",
-            "Your weapons are trash, %s.",
-            "Get something worth using first, %s."
-          ]
-        },
-        {
-          "keywords": ["money", "cash", "dollar"],
-          "responses": [
-            "Broke as usual, %s?",
-            "Learn how to make money, %s.",
-            "Always begging, huh, %s?"
-          ]
-        },
-        {
-          "keywords": ["level", "rank"],
-          "responses": [
-            "Still that low, %s?",
-            "Took you that long, %s?",
-            "Pathetic level, %s."
-          ]
-        },
-        {
-          "keywords": ["gang war", "war"],
-          "responses": [
-            "You won't last, %s.",
-            "War? You, %s?",
-            "Let me handle this, %s."
-          ]
-        },
-        {
-          "keywords": ["fly", "helicopter", "plane"],
-          "responses": [
-            "You can't fly, %s.",
-            "I'll take the controls, you sit down, %s.",
-            "Don't crash into a wall, %s."
-          ]
-        },
-        {
-          "keywords": ["quick", "help", "support"],
-          "responses": [
-            "In trouble again, %s?",
-            "Can't do anything alone, can you, %s?",
-            "Crying for help already, %s?"
-          ]
-        },
-        {
-          "keywords": ["gta online", "gta v", "los santos"],
-          "responses": [
-            "Learn to play, %s.",
-            "Hope you don't screw it up, %s.",
-            "GTA and you? Hilarious, %s."
-          ]
-        }
-      ]
-    }
-    ]]
-    local file = io.open(chatbot_file_path, "w")
-    if file then
-        file:write(default_data)
-        file:flush()
-        file:close()
-    end
-end
-
-functions.load_chatbot = function(chatbot_file_path)
-    local file = io.open(chatbot_file_path, "r")
-    if file then
-        local content = file:read("*all")
-        file:close()
-        
-        local chatbot_data = { triggers = {} }
-        local triggers = content:match('"triggers"%s*:%s*%[(.-)%]%s*}')
-        for trigger_block in triggers:gmatch('{(.-)}') do
-            local trigger = { keywords = {}, responses = {} }
-            for keyword in trigger_block:match('"keywords"%s*:%s*%[(.-)%]'):gmatch('"(.-)"') do
-                table.insert(trigger.keywords, keyword)
-            end
-            for response in trigger_block:match('"responses"%s*:%s*%[(.-)%]'):gmatch('"(.-)"') do
-                table.insert(trigger.responses, response)
-            end
-            table.insert(chatbot_data.triggers, trigger)
-        end
-        return chatbot_data
-    end
-    return {}
-end
-
 functions.contains_prohibited_characters = function(message, blacklist)
     for _, pattern in ipairs(blacklist) do
         if message:match(pattern) then
@@ -187,11 +68,35 @@ functions.contains_ip = function(message)
 end
 
 functions.int_to_ip = function(ip)
-    local b1 = bit.rshift(bit.band(ip, 0xFF000000), 24)
-    local b2 = bit.rshift(bit.band(ip, 0x00FF0000), 16)
-    local b3 = bit.rshift(bit.band(ip, 0x0000FF00), 8)
-    local b4 = bit.band(ip, 0x000000FF)
+    local b1 = math.floor(ip / 16777216) % 256
+    local b2 = math.floor(ip / 65536) % 256
+    local b3 = math.floor(ip / 256) % 256
+    local b4 = ip % 256
     return string.format("%d.%d.%d.%d", b1, b2, b3, b4)
+end
+
+functions.is_barcode_name = function(name)
+    return name:match("^[Il1|]+$")
+end
+
+functions.should_exclude_player = function(pid, exclude_friends, exclude_org, exclude_crew, exclude_strangers)
+    if exclude_friends and players.is_friend(pid) then
+        return true
+    end
+
+    if exclude_org and players.get_boss(pid) == players.get_boss(players.user()) then
+        return true
+    end
+
+    if exclude_crew and players.get_crew(pid) == players.get_crew(players.user()) then
+        return true
+    end
+
+    if exclude_strangers and not players.is_friend(pid) and players.get_boss(pid) ~= players.get_boss(players.user()) and players.get_crew(pid) ~= players.get_crew(players.user()) then
+        return true
+    end
+
+    return false
 end
 
 return functions
