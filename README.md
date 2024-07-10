@@ -1,5 +1,5 @@
 # CrackScript for the Stand Menu
-
+ 
 ## Overview
 
 CrackScript is a Lua script developed exclusively for the Stand Menu in GTA V. This script offers several options for enhancement, including managing chat logs, kicking players for prohibited characters, and detecting IP addresses.
