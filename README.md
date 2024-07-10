@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CrackScript for the Stand Menu
 
 ## Overview
@@ -65,13 +64,11 @@ This script is still in development and not yet available in the repository func
 CrackScript is a Lua script developed exclusively for the Stand Menu in GTA V. This script offers several options for enhancement, including managing chat logs, kicking players for prohibited characters, and detecting IP addresses.
 
 ## Important!
-<<<<<<< HEAD
 	- This script is still in development and not yet available in the repository function of Stand.
 	- You need to install `natives-1663599433` via the repository options.
 =======
 This script is still in development and not yet available in the repository function of Stand.
 
->>>>>>> 6e45f1710914a545c3fea16105d2d76b2c372172
 ## Installation
 
 1. **Download and Extract**
@@ -117,5 +114,4 @@ This script is still in development and not yet available in the repository func
         - `Anti Barcode` kicks all players with barcode-like names.
         - `Crash All` doesn't need an explanation.
         - `Kick All` neither does this.
-        - `Further Options`
->>>>>>> 60e0ffab74c7ceaa4992731595cd321dbb45d9d0
+        - `Further Options`#
