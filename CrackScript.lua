@@ -38,7 +38,7 @@ chat_options_menu:toggle("Kick Russian/Chinese Chatters", {}, "Kick players usin
     functions.log_debug("Kick Russian/Chinese Chatters toggled: " .. tostring(state), debug_file_path)
     util.toast("Kick Russian/Chinese Chatters toggled: " .. tostring(state))
 end, false)
-chat_options_menu:toggle("Detect IP Addresses", {}, "Detect IP addresses in chat and respond with sender's IP", function(state)
+chat_options_menu:toggle("Anti IP Share", {}, "Detect IP addresses in chat and respond with sender's IP", function(state)
     detect_ip_toggle = state
     functions.log_debug("Detect IP Addresses toggled: " .. tostring(state), debug_file_path)
     util.toast("Detect IP Addresses toggled: " .. tostring(state))
@@ -60,7 +60,7 @@ end)
 
 local toxic_menu = menu.list(crack_script_menu, "Toxic", {}, "Toxic actions")
 local exclude_options_menu = menu.list(toxic_menu, "Exclude", {}, "Exclude Options")
-exclude_options_menu:toggle("Exclude Friends", {}, "Exclude friends from actions", function(state)
+exclude_options_menu:toggle("Exclude Friends (BROKE)", {}, "Exclude friends from actions", function(state)
     exclude_friends_toggle = state
     functions.log_debug("Exclude Friends toggled: " .. tostring(state), debug_file_path)
     util.toast("Exclude Friends toggled: " .. tostring(state))
