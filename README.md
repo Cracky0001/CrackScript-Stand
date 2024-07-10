@@ -7,7 +7,7 @@ CrackScript is a Lua script developed exclusively for the Stand Menu in GTA V. T
 ## Important!
 	- This script is still in development and not yet available in the repository function of Stand.
 	- You need to install `natives-1663599433` via the repository options.
-
+ 
 ## Installation
 
 1. **Download and Extract**
