@@ -47,15 +47,7 @@ end, false)
 chat.on_message(function(packet_sender, message_sender, message_text, is_team_chat)
     local player_name = players.get_name(message_sender)
     functions.log_debug("Chat message received - Player: " .. player_name .. ", Message: " .. message_text, debug_file_path)
-    if log_chat_toggle then
-        api.log_chat_to_file(chat_log_file_path, player_name, message_text)
-    end
-    if kick_prohibited_chat_toggle then
-        api.kick_if_prohibited_characters(player_name, message_text, debug_file_path, blacklist)
-    end
-    if detect_ip_toggle then
-        api.detect_ip_and_respond(player_name, message_text, message_sender, debug_file_path)
-    end
+    api.handle_chat_message(log_chat_toggle, kick_prohibited_chat_toggle, detect_ip_toggle, player_name, message_text, message_sender, chat_log_file_path, debug_file_path, blacklist)
 end)
 
 local toxic_menu = menu.list(crack_script_menu, "Toxic", {}, "Toxic actions")
@@ -90,22 +82,7 @@ toxic_menu:action("Crash All Players", {"crashall"}, "Crash all players in the l
     util.toast("Crashed all players in the lobby")
 end)
 toxic_menu:action("Kick Session Host", {"kicksessionhost"}, "Kick the session host", function()
-    local host_id = players.get_host()
-    if host_id == players.user() then
-        util.toast("You are the session host. Kicking yourself will disconnect you from the session. Are you sure you want to proceed? Type /yes to confirm.")
-        
-        chat.on_message(function(packet_sender, message_sender, message_text, is_team_chat)
-            if players.get_name(message_sender) == players.get_name(players.user()) and message_text == "/yes" then
-                menu.trigger_commands("kick " .. players.get_name(host_id))
-                functions.log_debug("Kicked self as session host", debug_file_path)
-                util.toast("Kicked self as session host")
-            end
-        end)
-    else
-        menu.trigger_commands("kick " .. players.get_name(host_id))
-        functions.log_debug("Kicked session host: " .. players.get_name(host_id), debug_file_path)
-        util.toast("Kicked session host: " .. players.get_name(host_id))
-    end
+    api.kick_session_host(debug_file_path)
 end)
 
 toxic_menu:toggle("Anti-Barcode", {}, "Kick players with barcode-style names", function(state)
@@ -114,16 +91,14 @@ toxic_menu:toggle("Anti-Barcode", {}, "Kick players with barcode-style names", f
     util.toast("Anti-Barcode toggled: " .. tostring(state))
 end, false)
 
-local function kick_barcode_players()
-    for _, pid in ipairs(players.list(true, true, true)) do
-        local player_name = players.get_name(pid)
-        if functions.is_barcode_name(player_name) then
-            menu.trigger_commands("kick " .. player_name)
-            functions.log_debug("Kicked barcode player: " .. player_name, debug_file_path)
-            util.toast("Kicked barcode player: " .. player_name)
-        end
-    end
-end
+toxic_menu:action("Kick All Modders", {"kickmodders"}, "Kick all modders in the lobby", function()
+    api.kick_all_modders(debug_file_path, exclude_friends_toggle, exclude_org_toggle, exclude_crew_toggle, exclude_strangers_toggle)
+    util.toast("Kicked all modders in the lobby")
+end)
+
+toxic_menu:action("Kick Random Player", {"kickrandom"}, "Kick a random player in the lobby", function()
+    api.kick_random_player(debug_file_path)
+end)
 
 players.on_join(function(pid)
     if anti_barcode_toggle then
@@ -132,40 +107,6 @@ players.on_join(function(pid)
             menu.trigger_commands("kick " .. player_name)
             functions.log_debug("Kicked barcode player on join: " .. player_name, debug_file_path)
             util.toast("Kicked barcode player on join: " .. player_name)
-        end
-    end
-end)
-
-if anti_barcode_toggle then
-    kick_barcode_players()
-end
-
-toxic_menu:action("Kick All Modders", {"kickmodders"}, "Kick all modders in the lobby", function()
-    for _, pid in ipairs(players.list(true, true, true)) do
-        if players.is_marked_as_modder(pid) then
-            local should_kick = true
-
-            if exclude_friends_toggle and players.is_friend(pid) then
-                should_kick = false
-            end
-
-            if exclude_org_toggle and players.get_boss(pid) == players.get_boss(players.user()) then
-                should_kick = false
-            end
-
-            if exclude_crew_toggle and players.get_crew(pid) == players.get_crew(players.user()) then
-                should_kick = false
-            end
-
-            if exclude_strangers_toggle and not players.is_friend(pid) and players.get_boss(pid) ~= players.get_boss(players.user()) and players.get_crew(pid) ~= players.get_crew(players.user()) then
-                should_kick = false
-            end
-
-            if should_kick then
-                menu.trigger_commands("kick " .. players.get_name(pid))
-                functions.log_debug("Kicked modder: " .. players.get_name(pid), debug_file_path)
-                util.toast("Kicked modder: " .. players.get_name(pid))
-            end
         end
     end
 end)
