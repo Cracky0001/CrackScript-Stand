@@ -49,14 +49,11 @@ api.detect_ip_and_respond = function(player_name, message, sender_id, debug_file
         local player_ip = functions.int_to_ip(players.get_ip(sender_id))
         local response = "Player " .. player_name .. " tried to share an IP address. Here is their IP: " .. player_ip
         local response2 = "This is what happens when you try to leak other player's IPs"
-        local response3 = "You are a bad person" .. player_name
+        local response3 = "You are a bad person " .. player_name
         local response4 = "Provided through CrackScript by cracky0001 on GitHub"
         chat.send_message(response3, false, true, true)
-        wait(500)
         chat.send_message(response, false, true, true)
-        wait(500)
         chat.send_message(response2, false, true, true)
-        wait(500)
         chat.send_message(response4, false, true, true)
         functions.log_debug("IP detected and responded: " .. player_name .. " - " .. player_ip, debug_file_path)
         util.toast("IP detected and responded: " .. player_name .. " - " .. player_ip)
