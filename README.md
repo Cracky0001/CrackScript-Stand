@@ -10,7 +10,7 @@ This script is still in development and not yet available in the repository func
 ## Installation
 
 1. **Download and Extract**
-   - Download the script files and extract them into your Stand Lua Scripts directory.
+   - Download the script files from [HERE](https://github.com/Cracky0001/CrackScript-Stand/release/latest) and extract them into your Stand Lua Scripts directory.
 
 2. **Directory Structure**
    - Ensure the directory structure looks like this:
