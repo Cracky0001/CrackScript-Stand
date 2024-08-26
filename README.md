@@ -11,20 +11,7 @@ CrackScript is a Lua script developed exclusively for the Stand Menu in GTA V. T
 ## Installation
 
 1. **Download and Extract**
-   - Download the script files from [HERE](https://github.com/Cracky0001/CrackScript-Stand/releases/latest) and extract them into your Stand Lua Scripts directory.
-
-2. **Directory Structure**
-   - Ensure the directory structure looks like this:
-     ```
-     Stand/
-     └── Lua Scripts/
-         └── CrackScript/
-             ├── CrackScript.lua
-             └── lib/
-                 └── crackscript/
-                     ├── api.lua
-                     └── functions.lua
-     ```
+   - Download the script from [HERE](https://github.com/Cracky0001/CrackScript-Stand/releases/latest).
 
 3. **Load Script**
    - Load the CrackScript.lua file via the Lua script loader of the Stand Menu.
