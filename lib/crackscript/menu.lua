@@ -11,6 +11,7 @@ local ToxicOptions = menu.list(rootMenu, "Toxic Options", {"cstoxicoptions"}, "C
 local AntiGriefing = menu.list(rootMenu, "Anti-Griefing", {"csantigriefing"}, "Configure the anti-griefing settings")
 local VehicleBlacklist = menu.list(AntiGriefing, "Vehicle Blacklist", {"csvehicleblacklist"}, "Configure the vehicle blacklist")
 local ChatOptions = menu.list(rootMenu, "Chat Options", {"cschatoptions"}, "Configure the chat options")
+local VehicleOptions = menu.list(rootMenu, "Vehicle Options", {"csvehicleoptions"}, "Configure the vehicle options")
 local Credits = menu.list(rootMenu, "Credits", {"cscredits"}, "Show the credits")
 
 -- Globale Variablen deklarieren
@@ -31,6 +32,7 @@ require("lib.crackscript.logic.kick_modders_logic")
 require("lib.crackscript.logic.kick_host_logic")
 require("lib.crackscript.logic.kick_russian_chinese_logic")
 require("lib.crackscript.logic.anti_ip_share_logic")
+require("lib.crackscript.logic.spawn_random_vehicle")
 
 -- Anti-Barcode (Host Options)
 menu.divider(Blocks, "Blocks")
@@ -103,6 +105,12 @@ menu.toggle(ChatOptions, "Anti IP Share", {"csantiipshare"}, "Detect IP addresse
     end
 end)
 
+
+-- Vehicle Options
+menu.divider(VehicleOptions, "Vehicle Options")
+menu.action(VehicleOptions, "Spawn random vehicle", {"csspawnrandomvehicle"}, "Spawn a random vehicle", function()
+    spawnRandomVehicle()
+end)
 
 -- Credits
 menu.divider(Credits, "Credits")

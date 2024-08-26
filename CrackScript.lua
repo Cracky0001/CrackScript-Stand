@@ -1,5 +1,5 @@
 -- Global Version
-versionNum = "0.1.3"
+versionNum = "0.1.4"
 
 -- Error handling for xpcall
 local function try_catch(func, catch_func)
