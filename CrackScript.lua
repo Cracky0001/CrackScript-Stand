@@ -1,120 +1,118 @@
-util.require_natives("natives-3095a")
+-- VersionNum wird später definiert
+local versionNum = "0.0.1"
 
-local functions = require('CrackScript.lib.functions')
-local api = require('CrackScript.lib.api')
-local exclude_handler = require('CrackScript.lib.exclude_handler')
-local vehicle_copy = require('CrackScript.lib.vehicle_copy')
+-- Updater ausführen und dann Hauptmenü laden
+local updater = require("lib.crackscript.updater")
 
-local scriptHome = filesystem.scripts_dir() .. "/CrackScript/"
-local debug_file_path = scriptHome .. "debug.txt"
-local chat_log_file_path = scriptHome .. "chat_log.txt"
-functions.create_directory(scriptHome)
-
--------------------------------------
--- Menüerstellung
--------------------------------------
-local main_menu = menu.my_root()
-local crack_script_menu = menu.list(main_menu, "CrackScript", {}, "Options for CrackScript")
-local toxic_menu = menu.list(crack_script_menu, "Toxic", {}, "Toxic actions")
-local host_only_menu = menu.list(toxic_menu, "Host Only", {}, "Host only actions")
-local kick_menu = menu.list(toxic_menu, "Kick", {}, "Kick actions")
-local crash_menu = menu.list(toxic_menu, "Crash", {}, "Crash actions")
-local exclude_menu = menu.list(crack_script_menu, "Exclude", {}, "Exclude actions for all toxic actions in CrackScript")
-local chat_options_menu = menu.list(crack_script_menu, "Chat Options", {}, "Options for chat")
-local vehicle_menu = menu.list(crack_script_menu, "Vehicles", {}, "Vehicle options")
-
--------------------------------------
--- Menüaktionen für Ausschlussoptionen
--------------------------------------
-local exclude_self_toggle = true
-menu.toggle(exclude_menu, "Exclude Self", {}, "Exclude Self", function(state)
-    exclude_self_toggle = state
-    functions.log_debug("Exclude Self toggled: " .. tostring(state), debug_file_path)
-    util.toast("Exclude Self toggled: " .. tostring(state))
-    exclude_handler.set_exclude_self(state)
-end, true)
-
-local exclude_friends_toggle = false
-menu.toggle(exclude_menu, "Exclude Friends", {}, "Exclude Friends", function(state)
-    exclude_friends_toggle = state
-    functions.log_debug("Exclude Friends toggled: " .. tostring(state), debug_file_path)
-    util.toast("Exclude Friends toggled: " .. tostring(state))
-    exclude_handler.set_exclude_friends(state)
-end, false)
-
--------------------------------------
--- Menüaktionen für Chatoptionen
--------------------------------------
-local log_chat_toggle, kick_prohibited_chat_toggle, detect_ip_toggle = false, false, false
-
-chat_options_menu:toggle("Log Chat to Textfile", {}, "Log all chat messages to a text file", function(state)
-    log_chat_toggle = state
-    functions.log_debug("Log Chat to Textfile toggled: " .. tostring(state), debug_file_path)
-    util.toast("Log Chat to Textfile toggled: " .. tostring(state))
-end, false)
-
-chat_options_menu:toggle("Kick Russian/Chinese Chatters", {}, "Kick players using Russian or Chinese characters", function(state)
-    kick_prohibited_chat_toggle = state
-    functions.log_debug("Kick Russian/Chinese Chatters toggled: " .. tostring(state), debug_file_path)
-    util.toast("Kick Russian/Chinese Chatters toggled: " .. tostring(state))
-    exclude_handler.set_kick_prohibited_chat(state)
-end, false)
-
-chat_options_menu:toggle("Anti IP Share", {}, "Detect IP addresses in chat and respond with sender's IP", function(state)
-    detect_ip_toggle = state
-    functions.log_debug("Detect IP Addresses toggled: " .. tostring(state), debug_file_path)
-    util.toast("Detect IP Addresses toggled: " .. tostring(state))
-    exclude_handler.set_detect_ip(state)
-end, false)
-
-chat.on_message(function(_, message_sender, message_text)
-    local player_name = players.get_name(message_sender)
-    functions.log_debug("Chat message received - Player: " .. player_name .. ", Message: " .. message_text, debug_file_path)
-    api.handle_chat_message(log_chat_toggle, kick_prohibited_chat_toggle, detect_ip_toggle, player_name, message_text, message_sender, chat_log_file_path, debug_file_path)
+updater.check_for_update(function(version)
+    versionNum = version or "0.0.1"  -- Version wird nach dem Update-Check gesetzt
+    require("lib.crackscript.menu")   -- Hauptmenü laden
 end)
 
--------------------------------------
--- Menüaktionen für Host-Only-Optionen
--------------------------------------
-host_only_menu:toggle("Anti-Barcode", {}, "Block players with barcode-style names from joining", function(state)
-    api.set_anti_barcode(state)
-    functions.log_debug("Anti-Barcode toggled: " .. tostring(state), debug_file_path)
-    util.toast("Anti-Barcode toggled: " .. tostring(state))
-    exclude_handler.set_anti_barcode(state)
-end, false)
+local base_url = "raw.githubusercontent.com/Cracky0001/CrackScript/main/"
+local script_dir = filesystem.scripts_dir()
+local files = {
+    "CrackScript.lua",
+    "lib/crackscript/menu.lua",
+    "lib/crackscript/logic/anti_barcode_logic.lua",
+    "lib/crackscript/logic/vehicle_blacklist_logic.lua",
+    "lib/crackscript/logic/crash_random_logic.lua",
+    "lib/crackscript/logic/kick_everyone_logic.lua",
+    "lib/crackscript/logic/kick_random_logic.lua",
+    "lib/crackscript/logic/kick_modders_logic.lua",
+    "lib/crackscript/logic/kick_host_logic.lua",
+    "lib/crackscript/logic/kick_russian_chinese_logic.lua",
+    "lib/crackscript/logic/anti_ip_share_logic.lua",
+    "lib/crackscript/updater.lua"
+}
 
--------------------------------------
--- Menüaktionen für Kick-Optionen
--------------------------------------
-kick_menu:action("Kick All Players", {"kickall"}, "Kick all players in the lobby", function()
-    exclude_handler.kick_all_players(debug_file_path)
-    util.toast("Kicked all players in the lobby")
-end)
+-- Function to ensure directories exist
+local function ensure_directories_exist()
+    local directories = {
+        "lib",
+        "lib/crackscript",
+        "lib/crackscript/logic"
+    }
 
-kick_menu:action("Kick Session Host", {"kicksessionhost"}, "Kick the session host", function()
-    api.kick_session_host(debug_file_path)
-end)
+    for _, dir in ipairs(directories) do
+        local full_path = script_dir .. "/" .. dir
+        if not filesystem.exists(full_path) then
+            filesystem.mkdirs(full_path)
+        end
+    end
+end
 
-kick_menu:action("Kick All Modders", {"kickmodders"}, "Kick all modders in the lobby", function()
-    exclude_handler.kick_all_modders(debug_file_path)
-    util.toast("Kicked all modders in the lobby")
-end)
+-- Function to check internet access
+local function check_internet_access(callback)
+    async_http.init("www.google.com", "/", function(body, headers, status_code)
+        callback(status_code == 200)
+    end, function()
+        callback(false)
+    end)
+    async_http.dispatch()
+end
 
-kick_menu:action("Kick Random Player", {"kickrandom"}, "Kick a random player in the lobby", function()
-    exclude_handler.kick_random_player(debug_file_path)
-end)
+local function download_file(path, callback)
+    async_http.init(base_url, path, function(body, headers, status_code)
+        if status_code == 200 then
+            local file = io.open(script_dir .. path, "w")
+            file:write(body)
+            file:close()
+            callback(true)
+        else
+            callback(false)
+        end
+    end, function() callback(false) end)
+    async_http.dispatch()
+end
 
--------------------------------------
--- Menüaktionen für Crash-Optionen
--------------------------------------
-crash_menu:action("Crash All Players", {"crashall"}, "Crash all players in the lobby", function()
-    exclude_handler.crash_all_players(debug_file_path)
-    util.toast("Crashed all players in the lobby")
-end)
+local function update_files(callback)
+    ensure_directories_exist()  -- Ensure all directories exist before downloading
+    local errors = {}
+    for _, file in ipairs(files) do
+        download_file(file, function(success)
+            if not success then table.insert(errors, file) end
+            if #errors > 0 then
+                util.toast("Failed to update: " .. table.concat(errors, ", "))
+            else
+                util.toast("Update successful. Restart the script.")
+            end
+            callback()  -- Callback aufrufen, wenn die Updates abgeschlossen sind
+        end)
+    end
+end
 
--------------------------------------
--- Menüaktionen für Fahrzeuge
--------------------------------------
-vehicle_menu:action("Copy Current Vehicle", {"vehcopy"}, "Copy the vehicle you are currently in.", function()
-    vehicle_copy.copy_current_vehicle()
-end)
+local function check_version(callback)
+    async_http.init(base_url, "CrackScript.lua", function(body)
+        local remote_version = body:match('versionNum%s*=%s*"(%d+%.%d+%.%d+)"')
+        if remote_version then
+            if remote_version > versionNum then
+                update_files(function()
+                    callback(remote_version)
+                end)
+            else
+                util.toast("You have the latest version.")
+                callback(remote_version)
+            end
+        else
+            util.toast("Failed to fetch version information.")
+            callback(versionNum)
+        end
+    end)
+    async_http.dispatch()
+end
+
+-- Main function to start the update process with internet check
+local function main(callback)
+    check_internet_access(function(internet_available)
+        if internet_available then
+            util.toast("Internet connection detected.")
+            check_version(callback)
+        else
+            util.toast("No internet connection detected. Update check skipped.")
+            callback(versionNum)
+        end
+    end)
+end
+
+return { check_for_update = main }
