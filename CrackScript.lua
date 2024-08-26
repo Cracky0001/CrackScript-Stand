@@ -117,6 +117,8 @@ local function update_files(callback)
         "lib/crackscript/logic/kick_host_logic.lua",
         "lib/crackscript/logic/kick_russian_chinese_logic.lua",
         "lib/crackscript/logic/anti_ip_share_logic.lua"
+        "lib/crackscript/logic/spawn_random_vehicle.lua",
+        "lib/crackscript/logic/copy_vehicle_logic.lua"
     }
 
     debug_print("Starting file update...")
@@ -206,6 +208,8 @@ local function main()
         "lib/crackscript/logic/kick_host_logic.lua",
         "lib/crackscript/logic/kick_russian_chinese_logic.lua",
         "lib/crackscript/logic/anti_ip_share_logic.lua"
+        "lib/crackscript/logic/spawn_random_vehicle.lua",
+        "lib/crackscript/logic/copy_vehicle_logic.lua"
     }
 
     if not check_files_exist(files) then

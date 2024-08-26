@@ -33,6 +33,7 @@ require("lib.crackscript.logic.kick_host_logic")
 require("lib.crackscript.logic.kick_russian_chinese_logic")
 require("lib.crackscript.logic.anti_ip_share_logic")
 require("lib.crackscript.logic.spawn_random_vehicle")
+require("lib.crackscript.logic.copy_vehicle_logic")
 
 -- Anti-Barcode (Host Options)
 menu.divider(Blocks, "Blocks")
@@ -110,6 +111,10 @@ end)
 menu.divider(VehicleOptions, "Vehicle Options")
 menu.action(VehicleOptions, "Spawn random vehicle", {"csspawnrandomvehicle"}, "Spawn a random vehicle", function()
     spawnRandomVehicle()
+end)
+
+menu.action(VehicleOptions, "Copy Vehicle", {"cscopyvehicle"}, "Copy the vehicle you are currently in", function()
+    copyVehicle()
 end)
 
 -- Credits
