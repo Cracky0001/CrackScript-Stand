@@ -106,6 +106,7 @@ end)
 
 -- Credits
 menu.divider(Credits, "Credits")
+menu.hyperlink(Credits, "CrackScript on Github!", "https://github.com/Cracky0001/CrackScript-Stand", "Open the Github page of CrackScript")
 -- Developers (Credits)
 menu.divider(Credits, "Developers")
 -- Cracky
