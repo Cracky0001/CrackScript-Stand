@@ -19,7 +19,7 @@ local function ensure_directories_exist()
     local directories = {
         "lib",
         "lib/crackscript",
-        "lib/crackscript/logic"
+        "lib/crackscript/lib"
     }
 
     for _, dir in ipairs(directories) do
@@ -108,17 +108,7 @@ local function update_files(callback)
     local files = {
         "CrackScript.lua",
         "lib/crackscript/menu.lua",
-        "lib/crackscript/logic/anti_barcode_logic.lua",
-        "lib/crackscript/logic/vehicle_blacklist_logic.lua",
-        "lib/crackscript/logic/crash_random_logic.lua",
-        "lib/crackscript/logic/kick_everyone_logic.lua",
-        "lib/crackscript/logic/kick_random_logic.lua",
-        "lib/crackscript/logic/kick_modders_logic.lua",
-        "lib/crackscript/logic/kick_host_logic.lua",
-        "lib/crackscript/logic/kick_russian_chinese_logic.lua",
-        "lib/crackscript/logic/anti_ip_share_logic.lua"
-        "lib/crackscript/logic/spawn_random_vehicle.lua",
-        "lib/crackscript/logic/copy_vehicle_logic.lua"
+        "lib/crackscript/libs/function.lua"
     }
 
     debug_print("Starting file update...")
@@ -199,17 +189,8 @@ local function main()
     local files = {
         "CrackScript.lua",
         "lib/crackscript/menu.lua",
-        "lib/crackscript/logic/anti_barcode_logic.lua",
-        "lib/crackscript/logic/vehicle_blacklist_logic.lua",
-        "lib/crackscript/logic/crash_random_logic.lua",
-        "lib/crackscript/logic/kick_everyone_logic.lua",
-        "lib/crackscript/logic/kick_random_logic.lua",
-        "lib/crackscript/logic/kick_modders_logic.lua",
-        "lib/crackscript/logic/kick_host_logic.lua",
-        "lib/crackscript/logic/kick_russian_chinese_logic.lua",
-        "lib/crackscript/logic/anti_ip_share_logic.lua"
-        "lib/crackscript/logic/spawn_random_vehicle.lua",
-        "lib/crackscript/logic/copy_vehicle_logic.lua"
+        "lib/crackscript/libs/functions.lua",
+        "lib/crackscript/libs/crackessentials.lua"
     }
 
     if not check_files_exist(files) then

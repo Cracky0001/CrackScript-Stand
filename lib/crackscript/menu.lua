@@ -2,6 +2,7 @@
 
 util.require_natives("2944a", "g")
 
+local functions = require("crackscript.libs.functions")
 -- Hauptmenü definieren
 local rootMenu = menu.my_root()
 menu.divider(rootMenu, "CrackScript v" .. versionNum)
@@ -22,40 +23,19 @@ detect_ip_toggle = false
 
 shrugFace = "(ツ)"
 
--- Logik-Dateien einbinden
-require("lib.crackscript.logic.anti_barcode_logic")
-require("lib.crackscript.logic.vehicle_blacklist_logic")
-require("lib.crackscript.logic.crash_random_logic")
-require("lib.crackscript.logic.kick_everyone_logic")
-require("lib.crackscript.logic.kick_random_logic")
-require("lib.crackscript.logic.kick_modders_logic")
-require("lib.crackscript.logic.kick_host_logic")
-require("lib.crackscript.logic.kick_russian_chinese_logic")
-require("lib.crackscript.logic.anti_ip_share_logic")
-require("lib.crackscript.logic.spawn_random_vehicle")
-require("lib.crackscript.logic.copy_vehicle_logic")
-
 -- Anti-Barcode (Host Options)
 menu.divider(Blocks, "Blocks")
-menu.toggle(Blocks, "Anti-Barcode", {"csantibarcode"}, "Will kick players with a barcode name", function(state)
-    antiBarcodeEnabled = state
-    if state then
-        util.toast("Anti-Barcode Enabled")
-        checkBarcodeName()
-    else
-        util.toast("Anti-Barcode Disabled")
-    end
+menu.toggle_loop(Blocks, "Anti-Barcode", {"csantibarcode"}, "Will kick players with a barcode name", function()
+    functions.checkBarcodeName()
+end, function ()
+    util.toast("Anti-Barcode Disabled")
 end)
 
 -- Vehicle Blacklist (Anti-Griefing)
-menu.toggle(VehicleBlacklist, "Anti Griefing Vehicles", {"csantigriefingvehicles"}, "Will explode the vehicle if a player is in it", function(state)
-    vehicleCheckEnabled = state
-    if state then
-        util.toast("Vehicle Check Enabled")
-        vehicleCheck()
-    else
-        util.toast("Vehicle Check Disabled")
-    end
+menu.toggle_loop(VehicleBlacklist, "Anti Griefing Vehicles", {"csantigriefingvehicles"}, "Will explode the vehicle if a player is in it", function()
+    functions.vehicleCheck()
+end, function ()
+    util.toast("Vehicle Check Disabled")
 end)
 
 menu.divider(VehicleBlacklist, "Blacklisted Vehicles")
@@ -71,50 +51,44 @@ menu.readonly(VehicleBlacklist, "Minitank")
 -- Toxic Options
 menu.divider(ToxicOptions, "Crashes")
 menu.action(ToxicOptions, "Crash Random", {"cscrashrandom"}, "Crash a random player in the session", function()
-    crashRandom()
+    functions.crashRandom()
 end)
 
 menu.divider(ToxicOptions, "Kicks")
 menu.action(ToxicOptions, "Kick Everyone", {"cskickall"}, "Kick everyone in the session", function()
-    kickEveryone()
+    functions.kickEveryone()
 end)
 
 menu.action(ToxicOptions, "Kick Random", {"cskickrandom"}, "Kick a random player in the session", function()
-    kickRandom()
+    functions.kickRandom()
 end)
 
 menu.action(ToxicOptions, "Kick Modders", {"cskickmodders"}, "Kick all modders in the session", function()
-    kickModders()
+    functions.kickModders()
 end)
 
 menu.action(ToxicOptions, "Kick Sessionhost", {"cskickhost"}, "Kick the session host", function()
-    kickHost()
+    functions.kickHost()
 end)
 
 -- Chat Options
-menu.toggle(ChatOptions, "Kick Russian/Chinese Chat", {"kickruschi"}, "Detect Russian or Chinese characters in chat and kick the player", function(state)
-    kickRussianChineseEnabled = state
-    if state then
-        kickRussianChineseChat()
-    end
+menu.toggle_loop(ChatOptions, "Kick Russian/Chinese Chat", {"kickruschi"}, "Detect Russian or Chinese characters in chat and kick the player", function()
+    functions.kickRussianChineseChat()
 end)
 
-menu.toggle(ChatOptions, "Anti IP Share", {"csantiipshare"}, "Detect IP addresses in chat and spam chat until the IP is gone and will kick the player", function(state)
-    detect_ip_toggle = state
-    if state then
-        antiIPShare()
-    end
+menu.toggle_loop(ChatOptions, "Anti IP Share", {"csantiipshare"}, "Detect IP addresses in chat and spam chat until the IP is gone and will kick the player", function()
+    functions.antiIPShare()
 end)
 
 
 -- Vehicle Options
 menu.divider(VehicleOptions, "Vehicle Options")
 menu.action(VehicleOptions, "Spawn random vehicle", {"csspawnrandomvehicle"}, "Spawn a random vehicle", function()
-    spawnRandomVehicle()
+    functions.spawnRandomVehicle()
 end)
 
 menu.action(VehicleOptions, "Copy Vehicle", {"cscopyvehicle"}, "Copy the vehicle you are currently in", function()
-    copyVehicle()
+    functions.copyVehicle()
 end)
 
 -- Credits
