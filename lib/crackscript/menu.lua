@@ -7,13 +7,20 @@ local functions = require("crackscript.libs.functions")
 local rootMenu = menu.my_root()
 menu.divider(rootMenu, "CrackScript v" .. versionNum)
 local HostOptions = menu.list(rootMenu, "Host Options", {"cshostoptions"}, "Configure the host options")
+menu.divider(HostOptions, "Host Options")
 local Blocks = menu.list(HostOptions, "Blocks", {"csblocks"}, "Configure the block settings")
 local ToxicOptions = menu.list(rootMenu, "Toxic Options", {"cstoxicoptions"}, "Configure the toxic options")
+menu.divider(ToxicOptions, "Toxic Options")
 local AntiGriefing = menu.list(rootMenu, "Anti-Griefing", {"csantigriefing"}, "Configure the anti-griefing settings")
+menu.divider(AntiGriefing, "Anti-Griefing")
 local VehicleBlacklist = menu.list(AntiGriefing, "Vehicle Blacklist", {"csvehicleblacklist"}, "Configure the vehicle blacklist")
+menu.divider(VehicleBlacklist, "Vehicle Blacklist")
 local ChatOptions = menu.list(rootMenu, "Chat Options", {"cschatoptions"}, "Configure the chat options")
+menu.divider(ChatOptions, "Chat Options")
 local VehicleOptions = menu.list(rootMenu, "Vehicle Options", {"csvehicleoptions"}, "Configure the vehicle options")
+menu.divider(VehicleOptions, "Vehicle Options")
 local Credits = menu.list(rootMenu, "Credits", {"cscredits"}, "Show the credits")
+menu.divider(Credits, "Credits")
 
 -- Globale Variablen deklarieren
 antiBarcodeEnabled = false
@@ -21,22 +28,37 @@ vehicleCheckEnabled = false
 kickRussianChineseEnabled = false
 detect_ip_toggle = false
 
-shrugFace = "(ツ)"
+shrugFace = "(ツ)" -- Shruggie ^v^
+
 
 -- Anti-Barcode (Host Options)
 menu.divider(Blocks, "Blocks")
-menu.toggle_loop(Blocks, "Anti-Barcode", {"csantibarcode"}, "Will kick players with a barcode name", function()
+menu.toggle_loop(Blocks, "Anti-Barcode", {"csantibarcode"}, "Will kick players with a barcode name", function() 
     functions.checkBarcodeName()
 end, function ()
     util.toast("Anti-Barcode Disabled")
 end)
 
 -- Vehicle Blacklist (Anti-Griefing)
-menu.toggle_loop(VehicleBlacklist, "Anti Griefing Vehicles", {"csantigriefingvehicles"}, "Will explode the vehicle if a player is in it", function()
-    functions.vehicleCheck()
-end, function ()
-    util.toast("Vehicle Check Disabled")
+menu.toggle(VehicleBlacklist, "Anti Griefing Vehicles", {"csantigriefingvehicles"}, "Will explode the vehicle if a player is in it", function(on)
+    vehicleCheckEnabled = on
+    if on then
+        util.toast("Vehicle Check Enabled")
+        functions.vehicleCheck()
+    else
+        util.toast("Vehicle Check Disabled")
+    end
 end)
+
+menu.toggle(VehicleBlacklist, "Global Chat Notifications", {"csglobalchatnotifications"}, "Will notify the whole session if a player is in a blacklisted vehicle", function(on)
+    globalChatNotifications = on
+    if on then
+        util.toast("Global Chat Notifications Enabled")
+    else
+        util.toast("Global Chat Notifications Disabled")
+    end
+end)
+
 
 menu.divider(VehicleBlacklist, "Blacklisted Vehicles")
 menu.readonly(VehicleBlacklist, "Oppressor MK I")
@@ -71,18 +93,22 @@ menu.action(ToxicOptions, "Kick Sessionhost", {"cskickhost"}, "Kick the session 
     functions.kickHost()
 end)
 
--- Chat Options
-menu.toggle_loop(ChatOptions, "Kick Russian/Chinese Chat", {"kickruschi"}, "Detect Russian or Chinese characters in chat and kick the player", function()
+
+-- Chat Options | Cwacky => Chat options must be a menu.toggle, not a menu.toggle_loop
+menu.toggle(ChatOptions, "Kick Russian/Chinese Chat", {"kickruschi"}, "Detect Russian or Chinese characters in chat and kick the player", function()
     functions.kickRussianChineseChat()
 end)
 
-menu.toggle_loop(ChatOptions, "Anti IP Share", {"csantiipshare"}, "Detect IP addresses in chat and spam chat until the IP is gone and will kick the player", function()
+menu.toggle(ChatOptions, "Anti IP Share", {"csantiipshare"}, "Detect IP addresses in chat and spam chat until the IP is gone and will kick the player", function()
     functions.antiIPShare()
+end)
+
+menu.toggle(ChatOptions, "Anti-Begging", {"antibeggar"}, "Detects begging messages in chat and kicks the player", function()
+    functions.antiBeggar()
 end)
 
 
 -- Vehicle Options
-menu.divider(VehicleOptions, "Vehicle Options")
 menu.action(VehicleOptions, "Spawn random vehicle", {"csspawnrandomvehicle"}, "Spawn a random vehicle", function()
     functions.spawnRandomVehicle()
 end)
@@ -91,8 +117,8 @@ menu.action(VehicleOptions, "Copy Vehicle", {"cscopyvehicle"}, "Copy the vehicle
     functions.copyVehicle()
 end)
 
+
 -- Credits
-menu.divider(Credits, "Credits")
 menu.hyperlink(Credits, "CrackScript on Github!", "https://github.com/Cracky0001/CrackScript-Stand", "Open the Github page of CrackScript")
 -- Developers (Credits)
 menu.divider(Credits, "Developers")
