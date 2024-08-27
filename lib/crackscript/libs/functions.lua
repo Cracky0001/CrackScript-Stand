@@ -284,8 +284,33 @@ function self.spawnRandomVehicle()
         "dominator5",
         "dominator6",
         "double",
-        "drafter"
-        -- keine Lust mehr zu schreiben
+        "drafter",
+        "dubsta",
+        "dubsta2",
+        "dubsta3",
+        "dukes",
+        "dukes2",
+        "dukes3",
+        "dump",
+        "dune",
+        "dune2",
+        "dune3",
+        "dune4",
+        "dune5",
+        "duster",
+        "dynasty",
+        "elegy",
+        "elegy2",
+        "ellie",
+        "emerus",
+        "emperor",
+        "emperor2",
+        "emperor3",
+        "enduro",
+        "entity2",
+        "entityxf",
+        "esskey"
+        -- i am too lazy to add all vehicles.
     }
     menu.trigger_commands("spawn " .. vehicles[math.random(#vehicles)])
 
@@ -293,7 +318,6 @@ end
 
 -- function to explode players in blacklisted vehicles
 function self.vehicleCheck()
-    -- Tabelle, um zu verfolgen, welche Spieler bereits eine Nachricht erhalten haben
     local notifiedPlayers = {}
 
     if vehicleCheckEnabled then
@@ -305,10 +329,11 @@ function self.vehicleCheck()
             "vigilante",
             "toreador",
             "strikeforce",
-            "minitank"
+            "minitank",
+            "rcbandito"
         }
 
-        -- Tick handler für regelmäßige Überprüfungen
+        -- Tick handler
         util.create_tick_handler(function()
             if vehicleCheckEnabled then
                 for _, pid in ipairs(players.list(false, false, true)) do -- 1:self, 2:friends, 3:others
@@ -319,15 +344,15 @@ function self.vehicleCheck()
                         if model == util.joaat(vehhash) then
                             inBlacklistedVehicle = true
 
-                            -- Explosion auslösen
+                            -- Trigger explosion
                             local pos = players.get_position(pid)
                             ADD_EXPLOSION(pos.x, pos.y, pos.z, 0, 1.0, false, true, 0.0)
-                            util.toast(ObtainName(pid) .. " is in a " .. vehhash .. "! KaBoom!")
+                            util.toast(ObtainName(pid) .. " is on an " .. vehhash .. "! KaBoom!")
 
-                            -- Globale Chat-Benachrichtigung senden
+                            -- Send global chat notify
                             if globalChatNotifications and not notifiedPlayers[pid] then
-                                chat.send_message("Attention! " .. ObtainName(pid) .. " is in a " .. vehhash .. "!\nKaBoom!", false, true, true) -- 1:teamchat 2:Local History 3:Networwked
-                                notifiedPlayers[pid] = true -- Markiere den Spieler als benachrichtigt
+                                chat.send_message("Attention! " .. ObtainName(pid) .. " is on an " .. vehhash .. "!\nKaBoom!", false, true, true) -- 1:teamchat 2:Local History 3:Networwked
+                                notifiedPlayers[pid] = true
                             end
                             break
                         end
@@ -339,7 +364,7 @@ function self.vehicleCheck()
                     end
                 end
             end
-            util.yield(1000) -- Warte 1 Sekunde vor der nächsten Überprüfung
+            util.yield(1000) -- Wait 1 second
         end)
     end
 end
@@ -394,19 +419,17 @@ function self.antiBeggar()
 
     local kickedPlayers = {}
 
-    -- Loop durch alle Spieler, die nicht Freund oder Sie selbst sind
-    for _, pid in ipairs(players.list(false, false, true)) do
+    for _, pid in ipairs(players.list(false, false, true)) do -- 1:self, 2:friends, 3:others
         local player_name = ObtainName(pid)
 
         chat.on_message(function(sender, reserved, text, team_chat, networked, is_auto)
-            -- Überprüfe nur Nachrichten von dem Spieler, der aktuell in der Schleife ist
             if sender == pid and not kickedPlayers[pid] then
                 for _, phrase in ipairs(blacklistedPhrases) do
                     if string.match(text:lower(), phrase:lower()) then
-                        chat.send_message("Attention! " .. player_name .. " is begging for money!\n say goodbye!", true, true, true)
+                        chat.send_message("Attention! " .. player_name .. " is begging for money!\n say goodbye!", false, true, true)
                         util.toast("Kicking " .. player_name .. " for begging")
                         menu.trigger_commands("kick " .. player_name)
-                        kickedPlayers[pid] = true -- Markiere den Spieler als gekickt
+                        kickedPlayers[pid] = true -- mark player as kicked
                         break
                     end
                 end
