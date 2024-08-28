@@ -14,18 +14,41 @@
 
 local self = {}
 require("crackscript.libs.crackessentials")
-function self.checkBarcodeName()
-    if antiBarcodeEnabled and players.get_host() == players.user() then
-        for _, pid in ipairs(players.list(false, false, true)) do
-            local name = ObtainName(pid)
-            -- Überprüfe auf eine Kombination aus l, I, 1, 0, die eine Barcode-Struktur darstellt
-            if string.match(name, "^[lI10]+$") and string.len(name) >= 3 then
-                util.toast("Kicking " .. name .. " for barcode name")
-                menu.trigger_commands("kick " .. name)
-            end
+
+
+-- function to kick players with barcode names
+local function checkPlayerName(pid)
+    local name = ObtainName(pid)
+    local barcodeChars = "lI10-"
+    local nonBarcodeChars = 0
+    local barcodeCharsCount = 0
+
+    for i = 1, #name do
+        local char = name:sub(i, i)
+        if barcodeChars:find(char) then
+            barcodeCharsCount = barcodeCharsCount + 1
         end
     end
+
+    local barcodeRatio = barcodeCharsCount / #name
+
+    
+
+    if barcodeRatio >= 0.6 and #name >= 3 and not kickedBarcodePlayers[pid] then -- Kick players with more than 60% barcode characters in their name
+        util.toast("Kicking " .. name .. " for barcode name")
+        DebugPrintInfo("Kicking " .. name .. " for barcode name")
+        menu.trigger_commands("kick " .. name)
+        kickedBarcodePlayers[pid] = true
+    end
 end
+
+function self.checkBarcodeName()
+    for _, pid in ipairs(players.list(false, false, true)) do
+        checkPlayerName(pid)
+    end
+end
+
+
 
 function self.antiIPShare()
     chat.on_message(function(sender, reserved, text, team_chat, networked, is_auto)
@@ -332,7 +355,6 @@ function self.vehicleCheck()
             "minitank",
             "rcbandito"
         }
-
         -- Tick handler
         util.create_tick_handler(function()
             if vehicleCheckEnabled then
@@ -351,7 +373,7 @@ function self.vehicleCheck()
 
                             -- Send global chat notify
                             if globalChatNotifications and not notifiedPlayers[pid] then
-                                chat.send_message("Attention! " .. ObtainName(pid) .. " is on an " .. vehhash .. "!\nKaBoom!", false, true, true) -- 1:teamchat 2:Local History 3:Networwked
+                                SendGlobalChatMessage("Attention! " .. ObtainName(pid) .. " is in a blacklisted vehicle(" .. vehhash .. ")! KaBoom!")
                                 notifiedPlayers[pid] = true
                             end
                             break
@@ -404,6 +426,9 @@ function self.antiBeggar()
         "can you drop me money",
         "can you drop me cash",
         "can you drop me moni",
+        "can you give me money",
+        "can you give me cash",
+        "can you give me moni",
         "drop me money",
         "drop me cash",
         "drop me moni",

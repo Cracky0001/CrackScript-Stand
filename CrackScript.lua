@@ -1,5 +1,7 @@
+-- Lua Scripts/CrackScript.lua
+
 -- Global Version
-versionNum = "0.1.4"
+versionNum = "0.1.5"
 
 -- Error handling for xpcall
 local function try_catch(func, catch_func)
@@ -108,7 +110,8 @@ local function update_files(callback)
     local files = {
         "CrackScript.lua",
         "lib/crackscript/menu.lua",
-        "lib/crackscript/libs/function.lua"
+        "lib/crackscript/libs/function.lua",
+        "lib/crackscript/libs/crackessentials.lua"
     }
 
     debug_print("Starting file update...")
