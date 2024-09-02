@@ -3,24 +3,42 @@
 util.require_natives("2944a", "g")
 
 local functions = require("crackscript.libs.functions")
--- Hauptmenü definieren
+
+-- DebugPrint für Debugging
+local function DebugPrint(msg)
+    util.log("[CrackScript] " .. msg)
+end
+
 local rootMenu = menu.my_root()
 menu.divider(rootMenu, "CrackScript v" .. versionNum)
+DebugPrint("Main menu created")
+
 local HostOptions = menu.list(rootMenu, "Host Options", {"cshostoptions"}, "Configure the host options")
-menu.divider(HostOptions, "Host Options")
+DebugPrint("HostOptions menu created")
+
 local Blocks = menu.list(HostOptions, "Blocks", {"csblocks"}, "Configure the block settings")
+DebugPrint("Blocks menu created")
+
 local ToxicOptions = menu.list(rootMenu, "Toxic Options", {"cstoxicoptions"}, "Configure the toxic options")
-menu.divider(ToxicOptions, "Toxic Options")
+DebugPrint("ToxicOptions menu created")
+
 local AntiGriefing = menu.list(rootMenu, "Anti-Griefing", {"csantigriefing"}, "Configure the anti-griefing settings")
-menu.divider(AntiGriefing, "Anti-Griefing")
+DebugPrint("AntiGriefing menu created")
+
 local VehicleBlacklist = menu.list(AntiGriefing, "Vehicle Blacklist", {"csvehicleblacklist"}, "Configure the vehicle blacklist")
-menu.divider(VehicleBlacklist, "Vehicle Blacklist")
+DebugPrint("VehicleBlacklist menu created")
+
 local ChatOptions = menu.list(rootMenu, "Chat Options", {"cschatoptions"}, "Configure the chat options")
-menu.divider(ChatOptions, "Chat Options")
+DebugPrint("ChatOptions menu created")
+
 local VehicleOptions = menu.list(rootMenu, "Vehicle Options", {"csvehicleoptions"}, "Configure the vehicle options")
-menu.divider(VehicleOptions, "Vehicle Options")
+DebugPrint("VehicleOptions menu created")
+
+local miscOptions = menu.list(rootMenu, "Miscellaneous", {"csmiscellaneous"}, "Configure miscellaneous options")
+DebugPrint("Miscellaneous menu created")
+
 local Credits = menu.list(rootMenu, "Credits", {"cscredits"}, "Show the credits")
-menu.divider(Credits, "Credits")
+DebugPrint("Credits menu created")
 
 -- Globale Variablen deklarieren
 antiBarcodeEnabled = false
@@ -28,8 +46,7 @@ vehicleCheckEnabled = false
 kickRussianChineseEnabled = false
 detect_ip_toggle = false
 
-shrugFace = "(ツ)" -- Shruggie ^v^
-
+shrugFace = "(ツ)" -- Shruggi
 
 -- Anti-Barcode (Host Options)
 menu.divider(Blocks, "Blocks")
@@ -58,7 +75,6 @@ menu.toggle(VehicleBlacklist, "Global Chat Notifications", {"csglobalchatnotific
         util.toast("Global Chat Notifications Disabled")
     end
 end)
-
 
 menu.divider(VehicleBlacklist, "Blacklisted Vehicles")
 menu.readonly(VehicleBlacklist, "Oppressor MK I")
@@ -93,20 +109,36 @@ menu.action(ToxicOptions, "Kick Sessionhost", {"cskickhost"}, "Kick the session 
     functions.kickHost()
 end)
 
-
--- Chat Options | Cwacky => Chat options must be a menu.toggle, not a menu.toggle_loop
-menu.toggle(ChatOptions, "Kick Russian/Chinese Chat", {"kickruschi"}, "Detect Russian or Chinese characters in chat and kick the player", function()
-    functions.kickRussianChineseChat()
+-- Chat Options
+menu.toggle(ChatOptions, "Kick Russian/Chinese Chat", {"kickruschi"}, "Detect Russian or Chinese characters in chat and kick the player", function(on)
+    kickRussianChineseEnabled = on
+    if on then
+        util.toast("Kick Russian/Chinese Chat Enabled")
+        functions.kickRussianChineseChat()
+    else
+        util.toast("Kick Russian/Chinese Chat Disabled")
+    end
 end)
 
-menu.toggle(ChatOptions, "Anti IP Share", {"csantiipshare"}, "Detect IP addresses in chat and spam chat until the IP is gone and will kick the player", function()
-    functions.antiIPShare()
+menu.toggle(ChatOptions, "Anti IP Share", {"csantiipshare"}, "Detect IP addresses in chat and spam chat until the IP is gone and will kick the player", function(on)
+    detect_ip_toggle = on
+    if on then
+        util.toast("Anti IP Share Enabled")
+        functions.antiIPShare()
+    else
+        util.toast("Anti IP Share Disabled")
+    end
 end)
 
-menu.toggle(ChatOptions, "Anti-Begging", {"antibeggar"}, "Detects begging messages in chat and kicks the player", function()
-    functions.antiBeggar()
+menu.toggle(ChatOptions, "Anti-Begging", {"antibeggar"}, "Detects begging messages in chat and kicks the player", function(on)
+    antiBeggingEnabled = on
+    if on then
+        util.toast("Anti-Begging Enabled")
+        functions.antiBeggar()
+    else
+        util.toast("Anti-Begging Disabled")
+    end
 end)
-
 
 -- Vehicle Options
 menu.action(VehicleOptions, "Spawn random vehicle", {"csspawnrandomvehicle"}, "Spawn a random vehicle", function()
@@ -117,27 +149,28 @@ menu.action(VehicleOptions, "Copy Vehicle", {"cscopyvehicle"}, "Copy the vehicle
     functions.copyVehicle()
 end)
 
+-- Miscellaneous
+menu.toggle_loop(miscOptions, "Lock-On and Shoot Target", {"cslockonshoot"}, "Continuously lock on and shoot at the current target", function()
+    functions.lockOnAndShoot()
+end, function()
+    util.toast("Lock-On and Shoot Disabled")
+end)
 
 -- Credits
 menu.hyperlink(Credits, "CrackScript on Github!", "https://github.com/Cracky0001/CrackScript-Stand", "Open the Github page of CrackScript")
--- Developers (Credits)
 menu.divider(Credits, "Developers")
--- Cracky
 menu.action(Credits, "Cracky", {}, "Leading developer", function()
     util.toast("Cracky - Leading developer" .. shrugFace)
 end)
--- xQueenyx
 menu.action(Credits, "xQueenyx", {}, "Without you, everything wouldn't work the way it does right now.\nTHANK YOU FOR YOUR GENEROUS SUPPORT <3", function()
     util.toast("xQueenyx - Developer" .. shrugFace)
 end)
-
--- Helpers (Credits)
 menu.divider(Credits, "Helpers")
--- 1delay.
 menu.action(Credits, "1delay.", {}, "Thank you for your support in testing and error detection", function()
     util.toast("1delay. - Helper" .. shrugFace)
 end)
--- 44-69-6d-61
 menu.action(Credits, "44-69-6d-61", {}, "Thank you for your great ideas", function()
     util.toast("44-69-6d-61 - Helper" .. shrugFace)
 end)
+
+DebugPrint("Menu loaded successfully")

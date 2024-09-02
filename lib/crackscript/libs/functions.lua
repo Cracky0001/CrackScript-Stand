@@ -373,7 +373,7 @@ function self.vehicleCheck()
 
                             -- Send global chat notify
                             if globalChatNotifications and not notifiedPlayers[pid] then
-                                SendGlobalChatMessage("Attention! " .. ObtainName(pid) .. " is in a blacklisted vehicle(" .. vehhash .. ")! KaBoom!")
+                                SendGlobalChatMessage("[Vehicle Blacklist] " .. ObtainName(pid) .. " is in a blacklisted vehicle(" .. vehhash .. ")! KaBoom!")
                                 notifiedPlayers[pid] = true
                             end
                             break
@@ -390,6 +390,33 @@ function self.vehicleCheck()
         end)
     end
 end
+
+
+-- Funktion, um auf ein Ziel zu schießen
+function self.lockOnAndShoot()
+    local playerPed = players.user_ped()
+    local vehicle = PED.GET_VEHICLE_PED_IS_IN(playerPed, false)  -- Holt das Fahrzeug, das der Spieler gerade benutzt
+
+    if vehicle ~= 0 then  -- Überprüfen, ob der Spieler in einem Fahrzeug ist
+        local veh_target = memory.alloc_int()  -- Speicher für den Pointer allokieren
+
+        -- Fahrzeug-Ziel erfassen
+        if VEHICLE.GET_VEHICLE_LOCK_ON_TARGET(vehicle, veh_target) then
+            local target = memory.read_int(veh_target)
+            
+            -- Koordinaten des Ziels abrufen
+            if target ~= 0 then
+                local coords = ENTITY.GET_ENTITY_COORDS(target, false)
+                VEHICLE.SET_VEHICLE_SHOOT_AT_TARGET(playerPed, target, coords.x, coords.y, coords.z)
+            end
+        end
+
+        memory.free(veh_target)  -- Speicher freigeben
+    else
+        util.toast("You are not in a vehicle!")
+    end
+end
+
 
 -- function to Kick beggars
 function self.antiBeggar()
@@ -462,5 +489,32 @@ function self.antiBeggar()
         end)
     end
 end
+
+
+-- function to notify the whole session if a player is in a blacklisted vehicle
+function checkIfAimedAt()
+    local player_name = ObtainName(players.user())
+
+    for _, pid in ipairs(players.list(false, true, true)) do
+        if pid ~= players.user() then
+            local other_ped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
+            local isAiming = PLAYER.IS_PLAYER_FREE_AIMING_AT_ENTITY(pid, player_name)
+
+            if isAiming then
+                local playerName = ObtainName(pid)
+                if IsFriend(pid) then
+                    util.toast(playerName .. " (your friend) is aiming at you!")
+                elseif IsModder(pid) then
+                    util.toast(playerName .. " (modder) is aiming at you!")
+                elseif IsPlayerHost(pid) then
+                    util.toast(playerName .. " (session host) is aiming at you!")
+                else
+                    util.toast(playerName .. " is aiming at you!")
+                end
+            end
+        end
+    end
+end
+
 
 return self
